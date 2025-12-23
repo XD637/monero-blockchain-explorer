@@ -2,14 +2,14 @@
 // Created by mwo on 5/11/15.
 //
 
-// Oxyra compatibility: bypass private constructor access restriction
-#define private public
-#define protected public
-
 #include "MicroCore.h"
 
+// Workaround for Oxyra's private constructors in tx_pool and blockchain
+// Include these specific headers with access override
+#define private public
+#include "cryptonote_core/tx_pool.h"
+#include "cryptonote_core/blockchain.h"
 #undef private
-#undef protected
 
 
 namespace xmreg
