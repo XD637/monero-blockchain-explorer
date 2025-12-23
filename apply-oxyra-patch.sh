@@ -36,13 +36,15 @@ echo "✓ Backups created"
 echo ""
 
 # Check if already patched
-if grep -q "friend class xmreg::MicroCore" "$BLOCKCHAIN_H"; then
+if grep -q "namespace xmreg" "$BLOCKCHAIN_H"; then
     echo "✓ blockchain.h is already patched"
 else
     echo "Patching blockchain.h..."
+    # Add forward declaration at the top of the file after includes
+    sed -i '/#pragma once/a \\n\/\/ Forward declaration for blockchain explorer\nnamespace xmreg { class MicroCore; }' "$BLOCKCHAIN_H"
     # Find the first occurrence of "  private:" and add friend declaration before it
     sed -i '0,/^  private:$/s//    friend class xmreg::MicroCore;\n  private:/' "$BLOCKCHAIN_H"
-    if grep -q "friend class xmreg::MicroCore" "$BLOCKCHAIN_H"; then
+    if grep -q "namespace xmreg" "$BLOCKCHAIN_H"; then
         echo "✓ blockchain.h patched successfully"
     else
         echo "✗ Failed to patch blockchain.h - please apply manually"
@@ -50,12 +52,15 @@ else
 fi
 echo ""
 
-if grep -q "friend class xmreg::MicroCore" "$TX_POOL_H"; then
+if grep -q "namespace xmreg" "$TX_POOL_H"; then
     echo "✓ tx_pool.h is already patched"
 else
     echo "Patching tx_pool.h..."
+    # Add forward declaration at the top of the file after includes
+    sed -i '/#pragma once/a \\n\/\/ Forward declaration for blockchain explorer\nnamespace xmreg { class MicroCore; }' "$TX_POOL_H"
+    # Find the first occurrence of "  private:" and add friend declaration before it
     sed -i '0,/^  private:$/s//    friend class xmreg::MicroCore;\n  private:/' "$TX_POOL_H"
-    if grep -q "friend class xmreg::MicroCore" "$TX_POOL_H"; then
+    if grep -q "namespace xmreg" "$TX_POOL_H"; then
         echo "✓ tx_pool.h patched successfully"
     else
         echo "✗ Failed to patch tx_pool.h - please apply manually"
