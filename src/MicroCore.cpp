@@ -2,7 +2,14 @@
 // Created by mwo on 5/11/15.
 //
 
+// Oxyra compatibility: bypass private constructor access restriction
+#define private public
+#define protected public
+
 #include "MicroCore.h"
+
+#undef private
+#undef protected
 
 
 namespace xmreg
@@ -20,18 +27,15 @@ namespace xmreg
  * The same is done in cryptonode::core.
  */
 MicroCore::MicroCore():
-        m_mempool(nullptr),
-        m_blockchain_storage(nullptr)
+        m_blockchain_storage(m_mempool),
+        m_mempool(m_blockchain_storage)
 {
     m_device = &hw::get_device("default");
 }
 
 MicroCore::~MicroCore()
 {
-    if (m_mempool)
-        delete m_mempool;
-    if (m_blockchain_storage)
-        delete m_blockchain_storage;
+    // No dynamic memory to clean up with member objects
 }
 
 
@@ -73,13 +77,9 @@ MicroCore::init(const string& _blockchain_path, network_type nt)
     if(!db->is_open())
         return false;
 
-    // Create blockchain and mempool objects
-    m_blockchain_storage = new Blockchain();
-    m_mempool = new tx_memory_pool(*m_blockchain_storage);
-    
     // initialize Blockchain object to manage
     // the database.
-    return m_blockchain_storage->init(db, nettype);
+    return m_blockchain_storage.init(db, nettype);
 }
 
 /**
@@ -89,13 +89,13 @@ MicroCore::init(const string& _blockchain_path, network_type nt)
 Blockchain&
 MicroCore::get_core()
 {
-    return *m_blockchain_storage;
+    return m_blockchain_storage;
 }
 
 tx_memory_pool&
 MicroCore::get_mempool()
 {
-    return *m_mempool;
+    return m_mempool;
 }
 
 /**
@@ -108,7 +108,7 @@ MicroCore::get_block_by_height(const uint64_t& height, block& blk)
 {
     try
     {
-        blk = m_blockchain_storage->get_db().get_block_from_height(height);
+        blk = m_blockchain_storage.get_db().get_block_from_height(height);
     }
     catch (const BLOCK_DNE& e)
     {
@@ -146,19 +146,19 @@ MicroCore::get_block_by_height(const uint64_t& height, block& blk)
 bool
 MicroCore::get_tx(const crypto::hash& tx_hash, transaction& tx)
 {
-    if (m_blockchain_storage->have_tx(tx_hash))
+    if (m_blockchain_storage.have_tx(tx_hash))
     {
         // get transaction with given hash
         try
         {
-            tx = m_blockchain_storage->get_db().get_tx(tx_hash);
+            tx = m_blockchain_storage.get_db().get_tx(tx_hash);
         }
         catch (TX_DNE const& e)
         {
             try 
             {
                 // coinbase txs are not considered pruned
-                tx = m_blockchain_storage->get_db().get_pruned_tx(tx_hash);
+                tx = m_blockchain_storage.get_db().get_pruned_tx(tx_hash);
                 return true;
             }
             catch (TX_DNE const& e)
