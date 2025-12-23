@@ -2,16 +2,7 @@
 // Created by mwo on 5/11/15.
 //
 
-// CRITICAL: This must be BEFORE any includes
-// Workaround for Oxyra's private constructors - make them accessible
-#define private public
-#define protected public
-
 #include "MicroCore.h"
-
-// Restore access specifiers after including headers
-#undef private
-#undef protected
 
 
 namespace xmreg
