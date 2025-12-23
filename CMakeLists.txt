@@ -102,6 +102,9 @@ endif()
 # include boost headers
 include_directories(${Boost_INCLUDE_DIRS})
 
+# Configure Crow to use Boost.ASIO
+add_definitions(-DCROW_USE_BOOST)
+
 # include monero
 include_directories(${MONERO_SOURCE_DIR}/build)
 
