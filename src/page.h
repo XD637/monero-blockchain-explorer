@@ -2808,15 +2808,17 @@ show_checkrawtx(string raw_tx_data, string action)
 
         try
         {
-            std::istringstream iss(s);
-            boost::archive::portable_binary_iarchive ar(iss);
-            ar >> exported_txs;
-
-            r = true;
+            std::stringstream iss;
+            iss << s;
+            binary_archive<false> ar(iss);
+            if (::serialization::serialize(ar, exported_txs))
+                r = true;
+            else
+                cerr << "Failed to deserialize unsigned tx data" << endl;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
-            cerr << "Failed to parse unsigned tx data " << endl;
+            cerr << "Failed to parse unsigned tx data: " << e.what() << endl;
         }
 
         if (r)
@@ -3158,15 +3160,17 @@ show_checkrawtx(string raw_tx_data, string action)
 
         try
         {
-            std::istringstream iss(s);
-            boost::archive::portable_binary_iarchive ar(iss);
-            ar >> signed_txs;
-
-            r = true;
+            std::stringstream iss;
+            iss << s;
+            binary_archive<false> ar(iss);
+            if (::serialization::serialize(ar, signed_txs))
+                r = true;
+            else
+                cerr << "Failed to deserialize signed tx data" << endl;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
-            cerr << "Failed to parse signed tx data " << endl;
+            cerr << "Failed to parse signed tx data: " << e.what() << endl;
         }
 
         if (!r)
@@ -3470,15 +3474,17 @@ show_pushrawtx(string raw_tx_data, string action)
 
         try
         {
-            std::istringstream iss(s);
-            boost::archive::portable_binary_iarchive ar(iss);
-            ar >> signed_txs;
-
-            r = true;
+            std::stringstream iss;
+            iss << s;
+            binary_archive<false> ar(iss);
+            if (::serialization::serialize(ar, signed_txs))
+                r = true;
+            else
+                cerr << "Failed to deserialize signed tx data" << endl;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
-            cerr << "Failed to parse signed tx data " << endl;
+            cerr << "Failed to parse signed tx data: " << e.what() << endl;
         }
 
 
