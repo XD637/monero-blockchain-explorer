@@ -2808,12 +2808,9 @@ show_checkrawtx(string raw_tx_data, string action)
 
         try
         {
-            std::stringstream iss;
-            iss << s;
-            binary_archive<false> ar(iss);
-            if (::serialization::serialize(ar, exported_txs))
-                r = true;
-            else
+            const cryptonote::blobdata blob(s);
+            r = ::serialization::parse_binary(blob, exported_txs);
+            if (!r)
                 cerr << "Failed to deserialize unsigned tx data" << endl;
         }
         catch (const std::exception &e)
@@ -3160,12 +3157,9 @@ show_checkrawtx(string raw_tx_data, string action)
 
         try
         {
-            std::stringstream iss;
-            iss << s;
-            binary_archive<false> ar(iss);
-            if (::serialization::serialize(ar, signed_txs))
-                r = true;
-            else
+            const cryptonote::blobdata blob(s);
+            r = ::serialization::parse_binary(blob, signed_txs);
+            if (!r)
                 cerr << "Failed to deserialize signed tx data" << endl;
         }
         catch (const std::exception &e)
@@ -3474,12 +3468,9 @@ show_pushrawtx(string raw_tx_data, string action)
 
         try
         {
-            std::stringstream iss;
-            iss << s;
-            binary_archive<false> ar(iss);
-            if (::serialization::serialize(ar, signed_txs))
-                r = true;
-            else
+            const cryptonote::blobdata blob(s);
+            r = ::serialization::parse_binary(blob, signed_txs);
+            if (!r)
                 cerr << "Failed to deserialize signed tx data" << endl;
         }
         catch (const std::exception &e)
